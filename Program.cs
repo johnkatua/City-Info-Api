@@ -33,8 +33,9 @@ builder.Services.AddTransient<IMailService, LocalMailService>();
 #else
 builder.Services.AddTransient<IMailService, LocalMailService>();
 #endif
-builder.Configuration.AddEnvironmentVariables();
-builder.Services.AddDbContext<CityInfoContext>(opts => opts.UseSqlServer(builder.Configuration.GetValue<string>("CityInfoDBConnectionStr")));
+// builder.Configuration.AddEnvironmentVariables();
+// builder.Services.AddDbContext<CityInfoContext>(opts => opts.UseSqlServer(builder.Configuration.GetValue<string>("CityInfoDBConnectionStr")));
+builder.Services.AddDbContext<CityInfoContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
