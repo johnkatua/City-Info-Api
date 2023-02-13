@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CityInfoAPI.Migrations
 {
     [DbContext(typeof(CityInfoContext))]
-    [Migration("20230208143230_CityInfoDBAddPointOfInterestDesc")]
-    partial class CityInfoDBAddPointOfInterestDesc
+    [Migration("20230210140652_cityInfo")]
+    partial class cityInfo
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,32 @@ namespace CityInfoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Capital City of Kenya",
+                            Name = "Nairobi"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Home of Champions",
+                            Name = "Eldoret"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Oldest town in Kenya",
+                            Name = "Mombasa"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Oldest town in Kenya",
+                            Name = "Kisumu"
+                        });
                 });
 
             modelBuilder.Entity("CityInfoAPI.Entities.PointOfInterest", b =>
@@ -72,6 +98,43 @@ namespace CityInfoAPI.Migrations
                     b.HasIndex("CityId");
 
                     b.ToTable("PointsOfInterest");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CityId = 1,
+                            Description = "Location at the middle of the city",
+                            Name = "Nairobi National Park"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CityId = 1,
+                            Description = "Largest Internation conference center",
+                            Name = "KICC"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CityId = 2,
+                            Description = "Best tourist location in Mombasa",
+                            Name = "Ukunda"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CityId = 2,
+                            Description = "Oldest building used by arabs to trade",
+                            Name = "Fort Jesus"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CityId = 3,
+                            Description = "Best land mark in Kenya",
+                            Name = "Kerio Valley"
+                        });
                 });
 
             modelBuilder.Entity("CityInfoAPI.Models.PointOfInterestDto", b =>

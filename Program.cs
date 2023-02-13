@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Serilog;
 using CityInfoAPI.Services;
 using CityInfoAPI.Db;
+using CityInfoAPI.Models;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -27,15 +30,39 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
-// Registering mail service to the container
+// Registering mail service to the container with transient lifetime
 #if DEBUG
 builder.Services.AddTransient<IMailService, LocalMailService>();
 #else
 builder.Services.AddTransient<IMailService, LocalMailService>();
 #endif
-// builder.Configuration.AddEnvironmentVariables();
-// builder.Services.AddDbContext<CityInfoContext>(opts => opts.UseSqlServer(builder.Configuration.GetValue<string>("CityInfoDBConnectionStr")));
+
+// builder.Services.AddSingleton<CitiesDataStore>();
+
 builder.Services.AddDbContext<CityInfoContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// registering the repository with the scope lifetime
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddAuthentication("Bearer").AddJwtBearer(opts => {
+    opts.TokenValidationParameters = new() {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Authentication:Issuer"],
+        ValidAudience = builder.Configuration["Authentication:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+    };
+});
+
+builder.Services.AddAuthorization(opts => {
+    opts.AddPolicy("MustBeFromNairobi", policy => {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("city", "Nairobi");
+    });
+});
 
 var app = builder.Build();
 
@@ -49,6 +76,9 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpRedirection();
 
 app.UseRouting();
+
+// authentication middleware
+app.UseAuthentication();
 
 app.UseAuthorization();
 

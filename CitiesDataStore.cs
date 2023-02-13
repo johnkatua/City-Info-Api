@@ -1,4 +1,3 @@
-// using CityInfoAPI.Models;
 using CityInfoAPI.Models;
 
 namespace CityInfoAPI {

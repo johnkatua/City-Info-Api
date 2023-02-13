@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CityInfoAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class CityInfoDBInitialMigration : Migration
+    public partial class cityInfo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,6 +53,7 @@ namespace CityInfoAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CityId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -62,6 +65,29 @@ namespace CityInfoAPI.Migrations
                         principalTable: "Cities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Cities",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Capital City of Kenya", "Nairobi" },
+                    { 2, "Home of Champions", "Eldoret" },
+                    { 3, "Oldest town in Kenya", "Mombasa" },
+                    { 4, "Oldest town in Kenya", "Kisumu" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PointsOfInterest",
+                columns: new[] { "Id", "CityId", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "Location at the middle of the city", "Nairobi National Park" },
+                    { 2, 1, "Largest Internation conference center", "KICC" },
+                    { 3, 2, "Best tourist location in Mombasa", "Ukunda" },
+                    { 4, 2, "Oldest building used by arabs to trade", "Fort Jesus" },
+                    { 5, 3, "Best land mark in Kenya", "Kerio Valley" }
                 });
 
             migrationBuilder.CreateIndex(
